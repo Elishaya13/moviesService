@@ -7,6 +7,7 @@ export default defineConfig({
   schema: 'src/infrastructure/database/prisma/schema.prisma',
   migrations: {
     path: 'src/infrastructure/database/prisma/migrations',
+    seed: 'tsx src/infrastructure/database/prisma/seed.ts',
   },
   datasource: {
     url: process.env['MOVIES_DATABASE_URL'],
