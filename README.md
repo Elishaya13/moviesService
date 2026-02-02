@@ -1,3 +1,13 @@
+## Avant de lancer
+
+- Ne pas oublier de lancer docker desktop
+- De lancer docker-compose up -d
+- Et pour voir la BDD:
+
+```
+npx prisma studio
+```
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
