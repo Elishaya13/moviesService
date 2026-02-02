@@ -17,6 +17,7 @@ model Movie {
   title       String
   description String
   duration    Int
+  coverImage  String?
   category    String
   releaseDate DateTime
   rating      Float

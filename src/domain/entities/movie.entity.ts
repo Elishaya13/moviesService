@@ -4,6 +4,7 @@ export class Movie {
     public title: string,
     public description: string,
     public duration: number,
+    public coverImage: string | null,
     public category: string,
     public releaseDate: Date,
     public rating: number,

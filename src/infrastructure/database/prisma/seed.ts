@@ -18,6 +18,8 @@ const moviesData = [
     title: 'Inception',
     description: 'A mind-bending thriller about dream invasion.',
     duration: 148,
+    coverImage:
+      'https://www.ecranlarge.com/content/uploads/2020/02/inception-affiche-francaise-1164840.png',
     category: 'Sci-Fi',
     releaseDate: new Date('2010-07-16'),
     rating: 8.8,
@@ -27,6 +29,8 @@ const moviesData = [
     description:
       'The aging patriarch of an organized crime dynasty transfers control to his reluctant son.',
     duration: 175,
+    coverImage:
+      'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg',
     category: 'Crime',
     releaseDate: new Date('1972-03-24'),
     rating: 9.2,
@@ -36,6 +40,8 @@ const moviesData = [
     description:
       'When the menace known as the Joker wreaks havoc, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.',
     duration: 152,
+    coverImage:
+      'https://upload.wikimedia.org/wikipedia/en/8/8a/Dark_Knight.jpg',
     category: 'Action',
     releaseDate: new Date('2008-07-18'),
     rating: 9.0,
