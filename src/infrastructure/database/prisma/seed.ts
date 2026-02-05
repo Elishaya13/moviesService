@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@prisma/client';
+import { Category, PrismaClient } from '@prisma/client';
 import 'dotenv/config';
 import { Pool } from 'pg';
 
@@ -20,7 +19,7 @@ const moviesData = [
     duration: 148,
     coverImage:
       'https://www.ecranlarge.com/content/uploads/2020/02/inception-affiche-francaise-1164840.png',
-    category: 'Sci-Fi',
+    category: Category.SCI_FI,
     releaseDate: new Date('2010-07-16'),
     rating: 8.8,
   },
@@ -31,7 +30,7 @@ const moviesData = [
     duration: 175,
     coverImage:
       'https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg',
-    category: 'Crime',
+    category: Category.CRIME,
     releaseDate: new Date('1972-03-24'),
     rating: 9.2,
   },
@@ -42,7 +41,7 @@ const moviesData = [
     duration: 152,
     coverImage:
       'https://upload.wikimedia.org/wikipedia/en/8/8a/Dark_Knight.jpg',
-    category: 'Action',
+    category: Category.ACTION,
     releaseDate: new Date('2008-07-18'),
     rating: 9.0,
   },

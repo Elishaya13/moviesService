@@ -3,12 +3,12 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import * as jwt from 'jsonwebtoken';
-import { PrismaService } from '../src/infrastructure/database/prisma/prisma.service';
+import { MovieCategory } from 'src/domain/entities/movie-category.enum';
 
 describe('MovieController (e2e)', () => {
   let app: INestApplication;
   let adminToken: string;
-  let prisma: PrismaService;
+  // let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,10 +27,7 @@ describe('MovieController (e2e)', () => {
 
     await app.init();
 
-    prisma = app.get(PrismaService);
-
-    // --- ON NE VIDE PLUS LA BASE ICI ---
-    // Tes données de seed resteront intactes.
+    // prisma = app.get(PrismaService);
 
     const secret = 'KeySecretMovies';
     adminToken = jwt.sign(
@@ -46,7 +43,6 @@ describe('MovieController (e2e)', () => {
   // TEST 1 : Succès avec Auth et date fixe
   it('/movies (POST) - Success', () => {
     // On utilise un titre unique pour ce test précis pour ne pas polluer ta base
-    // et éviter les erreurs si tu ajoutes une contrainte d'unicité plus tard.
     const testMovieTitle = `Inception-Test-${Date.now()}`;
 
     return request(app.getHttpServer())
@@ -57,17 +53,23 @@ describe('MovieController (e2e)', () => {
         description: 'A thief who steals corporate secrets...',
         duration: 148,
         coverImage: 'https://example.com/inception.jpg',
-        category: 'Sci-Fi',
+        category: MovieCategory.SCI_FI,
         // Format ISO complet pour que Prisma accepte la date sans broncher
         releaseDate: '2010-07-16T00:00:00.000Z',
         rating: 8.8,
       })
       .expect(201)
-      .expect(({ body }) => {
-        expect(body.title).toBe(testMovieTitle);
-        expect(body.id).toBeDefined();
-        expect(body.releaseDate).toContain('2010-07-16');
-      });
+      .expect(
+        ({
+          body,
+        }: {
+          body: { title: string; id: string; releaseDate: string };
+        }) => {
+          expect(body.title).toBe(testMovieTitle);
+          expect(body.id).toBeDefined();
+          expect(body.releaseDate).toContain('2010-07-16');
+        },
+      );
   });
 
   // TEST 2 : Sécurité

@@ -8,8 +8,10 @@ import {
   IsInt,
   Min,
   Max,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { MovieCategory } from 'src/domain/entities/movie-category.enum';
 
 export class CreateMovieDto {
   @ApiProperty({ example: 'Inception' })
@@ -20,9 +22,14 @@ export class CreateMovieDto {
   @IsString()
   description: string;
 
-  @ApiProperty({ example: 'Sci-Fi' })
-  @IsString()
-  category: string;
+  @ApiProperty({
+    enum: MovieCategory,
+    example: MovieCategory.ACTION,
+    description:
+      'Catégorie du film (voir la liste des choix possibles dans le Schema)',
+  })
+  @IsEnum(MovieCategory) // Vérifie que la valeur envoyée est bien dans l'enum
+  category: MovieCategory;
 
   @ApiProperty({ example: '2010-07-16' })
   @Type(() => Date)

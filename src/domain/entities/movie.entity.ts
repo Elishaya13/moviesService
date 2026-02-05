@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Result } from '../../shared/result';
+import { MovieCategory } from './movie-category.enum';
 
 export interface MovieProps {
   id?: string;
@@ -7,7 +8,7 @@ export interface MovieProps {
   description: string;
   duration: number;
   coverImage: string;
-  category: string;
+  category: MovieCategory;
   releaseDate: Date;
   rating: number;
 }
@@ -22,7 +23,7 @@ export class Movie {
   @ApiProperty() public readonly duration: number;
 
   @ApiProperty() public readonly coverImage: string;
-  @ApiProperty() public readonly category: string;
+  @ApiProperty({ enum: MovieCategory }) public readonly category: MovieCategory;
 
   @ApiProperty() public readonly releaseDate: Date;
 
