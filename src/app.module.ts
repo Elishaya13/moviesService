@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { ApplicationModule } from './application/application.module';
 import { PresentationModule } from './presentation/presentation.module';
+import { JwtStrategy } from './infrastructure/auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { PresentationModule } from './presentation/presentation.module';
     PresentationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtStrategy],
 })
 export class AppModule {}

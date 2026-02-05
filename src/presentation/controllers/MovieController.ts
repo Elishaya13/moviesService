@@ -8,6 +8,7 @@ import {
   Delete,
   Patch,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { GetAllMoviesUseCase } from '../../application/use-cases/GetAllMovies/GetAllMoviesUseCase';
 import { GetAllMoviesDto } from '../../application/use-cases/GetAllMovies/GetAllMoviesDto';
@@ -15,6 +16,8 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiBearerAuth,
+  ApiTags,
 } from '@nestjs/swagger';
 import { GetMovieByIdUseCase } from 'src/application/use-cases/GetMovieById/GetMovieByIdUseCase';
 import { CreateMovieDto } from 'src/application/use-cases/CreateMovie/CreateMovieDto';
@@ -24,7 +27,9 @@ import { UpdateMovieUseCase } from 'src/application/use-cases/UpdateMovie/Update
 import { UpdateMovieDto } from 'src/application/use-cases/UpdateMovie/UpdateMovieDto';
 import { Movie } from 'src/domain/entities/movie.entity';
 import type { Response } from 'express';
+import { JwtAuthGuard } from '../guards/auth.guard';
 
+@ApiTags('Movies')
 @Controller('movies')
 export class MovieController {
   constructor(
@@ -59,7 +64,10 @@ export class MovieController {
     return res.status(200).json(result.getValue());
   }
 
+  // Routes protegées par JWT
   @Post()
+  @ApiBearerAuth() // Indique que cette route nécessite une authentification par token
+  @UseGuards(JwtAuthGuard) // Ajoutez ici votre guard d'authentification
   @ApiCreatedResponse({
     type: Movie,
     description: 'The movie has been successfully created.',
@@ -79,6 +87,8 @@ export class MovieController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth() // Indique que cette route nécessite une authentification par token
+  @UseGuards(JwtAuthGuard)
   @ApiOkResponse({ type: Movie, description: 'Movie updated successfully.' })
   async updateMovie(
     @Param('id') id: string,
@@ -95,10 +105,16 @@ export class MovieController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth() // Indique que cette route nécessite une authentification par token
+  @UseGuards(JwtAuthGuard)
   @ApiNoContentResponse({ description: 'Movie deleted successfully.' })
   async deleteMovie(@Param('id') id: string, @Res() res: Response) {
     const result = await this.deleteMovieUseCase.execute(id);
+
     if (result.isFailure) {
+      if (result.error === 'Movie not found') {
+        return res.status(404).json({ message: result.error });
+      }
       return res.status(400).json({ message: result.error });
     }
     return res.status(204).send(); // No Content

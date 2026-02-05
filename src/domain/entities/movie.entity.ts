@@ -50,6 +50,9 @@ export class Movie {
     if (props.rating < 0 || props.rating > 10) {
       return Result.fail<Movie>('Rating must be between 0 and 10');
     }
+    if (props.releaseDate > new Date()) {
+      return Result.fail<Movie>('Release date cannot be in the future');
+    }
 
     // Si tout est valide, on crée l'instance de Movie
     const movie = new Movie(props);
