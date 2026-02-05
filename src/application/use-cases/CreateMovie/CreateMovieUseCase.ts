@@ -8,20 +8,7 @@ import { Result } from 'src/shared/result';
 export class CreateMovieUseCase {
   // Implementation of the use case to create a movie
   constructor(private readonly movieRepository: MovieRepository) {}
-
-  // async execute(dto: CreateMovieDto): Promise<Movie> {
-  //   return this.movieRepository.create({
-  //     title: dto.title,
-  //     description: dto.description,
-  //     category: dto.category,
-  //     releaseDate: dto.releaseDate,
-  //     duration: dto.duration,
-  //     coverImage: dto.coverImage,
-  //     rating: dto.rating,
-  //   });
-  // }
   async execute(dto: CreateMovieDto): Promise<Result<Movie>> {
-    // Ajoute le type Result ici
     const movieResult = Movie.create(dto); // Utilise la validation de l'entité
 
     if (movieResult.isFailure) {

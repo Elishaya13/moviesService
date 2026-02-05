@@ -5,6 +5,7 @@ import { UpdateMovieUseCase } from './use-cases/UpdateMovie/UpdateMovieUseCase';
 import { DeleteMovieUseCase } from './use-cases/DeleteMovie/DeleteMovieUseCase';
 import { CreateMovieUseCase } from './use-cases/CreateMovie/CreateMovieUseCase';
 import { GetMovieByIdUseCase } from './use-cases/GetMovieById/GetMovieByIdUseCase';
+import { SearchMoviesUseCase } from './use-cases/SearchMovies/SearchMoviesUseCase';
 
 @Module({
   imports: [DatabaseModule], // Import the DatabaseModule to access repositories
@@ -14,6 +15,7 @@ import { GetMovieByIdUseCase } from './use-cases/GetMovieById/GetMovieByIdUseCas
     CreateMovieUseCase,
     DeleteMovieUseCase,
     UpdateMovieUseCase,
+    SearchMoviesUseCase,
   ],
   exports: [
     GetAllMoviesUseCase,
@@ -21,6 +23,7 @@ import { GetMovieByIdUseCase } from './use-cases/GetMovieById/GetMovieByIdUseCas
     CreateMovieUseCase,
     DeleteMovieUseCase,
     UpdateMovieUseCase,
+    SearchMoviesUseCase,
   ],
 })
 export class ApplicationModule {}

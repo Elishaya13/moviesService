@@ -19,7 +19,6 @@ async function bootstrap() {
     .setTitle('Movies Service')
     .setDescription('Microservice de gestion du catalogue de films')
     .setVersion('1.0')
-    .addTag('movies')
     .addBearerAuth() // Ajoute la possibilité d'authentification par token dans Swagger
     .build();
 

@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { ApplicationModule } from './application/application.module';
 import { PresentationModule } from './presentation/presentation.module';
@@ -16,7 +14,7 @@ import { JwtStrategy } from './infrastructure/auth/jwt.strategy';
     ApplicationModule,
     PresentationModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, JwtStrategy],
+  controllers: [],
+  providers: [JwtStrategy],
 })
 export class AppModule {}

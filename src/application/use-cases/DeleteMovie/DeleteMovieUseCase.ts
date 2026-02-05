@@ -15,13 +15,3 @@ export class DeleteMovieUseCase {
     return Result.ok<void>();
   }
 }
-
-// async execute(id: string): Promise<void> {
-//   const movie = await this.movieRepository.findById(id);
-
-//   if (!movie) {
-//     throw new NotFoundException(`Movie with ID ${id} not found`);
-//   }
-
-//   return this.movieRepository.delete(id);
-// }

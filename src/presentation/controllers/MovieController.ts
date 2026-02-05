@@ -7,17 +7,20 @@ import {
   Body,
   Delete,
   Patch,
-  Res,
   UseGuards,
+  BadRequestException,
+  NotFoundException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { GetAllMoviesUseCase } from '../../application/use-cases/GetAllMovies/GetAllMoviesUseCase';
-import { GetAllMoviesDto } from '../../application/use-cases/GetAllMovies/GetAllMoviesDto';
 import {
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiBearerAuth,
   ApiTags,
+  ApiOperation,
 } from '@nestjs/swagger';
 import { GetMovieByIdUseCase } from 'src/application/use-cases/GetMovieById/GetMovieByIdUseCase';
 import { CreateMovieDto } from 'src/application/use-cases/CreateMovie/CreateMovieDto';
@@ -26,8 +29,9 @@ import { DeleteMovieUseCase } from 'src/application/use-cases/DeleteMovie/Delete
 import { UpdateMovieUseCase } from 'src/application/use-cases/UpdateMovie/UpdateMovieUseCase';
 import { UpdateMovieDto } from 'src/application/use-cases/UpdateMovie/UpdateMovieDto';
 import { Movie } from 'src/domain/entities/movie.entity';
-import type { Response } from 'express';
 import { JwtAuthGuard } from '../guards/auth.guard';
+import { SearchMoviesDto } from 'src/application/use-cases/SearchMovies/SearchMoviesDto';
+import { SearchMoviesUseCase } from 'src/application/use-cases/SearchMovies/SearchMoviesUseCase';
 
 @ApiTags('Movies')
 @Controller('movies')
@@ -38,86 +42,114 @@ export class MovieController {
     private readonly createMovieUseCase: CreateMovieUseCase,
     private readonly deleteMovieUseCase: DeleteMovieUseCase,
     private readonly updateMovieUseCase: UpdateMovieUseCase,
+    private readonly searchMoviesUseCase: SearchMoviesUseCase,
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'Récupérer tous les films' })
   @ApiOkResponse({
     type: Movie,
     isArray: true,
     description: 'List of movies retrieved successfully.',
   })
-  async getMovies(@Query() queryParams: GetAllMoviesDto, @Res() res: Response) {
-    const result = await this.getAllMoviesUseCase.execute(queryParams);
-    return res.status(200).json(result.getValue());
+  async getMovies() {
+    const result = await this.getAllMoviesUseCase.execute();
+    if (result.isFailure) {
+      throw new BadRequestException(result.error);
+    }
+    return result.getValue();
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'Rechercher des films' })
+  @ApiOkResponse({
+    type: Movie,
+    isArray: true,
+    description: 'Movies retrieved successfully based on search criteria.',
+  })
+  async search(@Query() query: SearchMoviesDto) {
+    const result = await this.searchMoviesUseCase.execute(query);
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error);
+    }
+
+    return result.getValue();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Récupérer un film par son ID' })
   @ApiOkResponse({ type: Movie, description: 'Movie retrieved successfully.' })
-  async getMovieById(@Param('id') id: string, @Res() res: Response) {
+  async getMovieById(@Param('id') id: string) {
     const result = await this.getMovieByIdUseCase.execute(id);
 
     if (result.isFailure) {
       // Si le film n'existe pas, on renvoie une 404 (Not Found)
-      return res.status(404).json({ message: result.error });
+      throw new NotFoundException(result.error); // result.error contient le message d'erreur "Movie not found"
     }
 
-    return res.status(200).json(result.getValue());
+    return result.getValue();
   }
 
   // Routes protegées par JWT
   @Post()
-  @ApiBearerAuth() // Indique que cette route nécessite une authentification par token
-  @UseGuards(JwtAuthGuard) // Ajoutez ici votre guard d'authentification
+  @ApiOperation({ summary: 'Créer un nouveau film' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({
     type: Movie,
     description: 'The movie has been successfully created.',
   })
-  async createMovie(
-    @Body() createMovieDto: CreateMovieDto,
-    @Res() res: Response,
-  ) {
+  async createMovie(@Body() createMovieDto: CreateMovieDto) {
     const result = await this.createMovieUseCase.execute(createMovieDto);
 
     if (result.isFailure) {
-      return res.status(400).json({ message: result.error });
+      throw new BadRequestException(result.error); // Gère les erreurs de validation
     }
 
-    const movie = result.getValue();
-    return res.status(201).json(movie); // On renvoie le film créé
+    return result.getValue(); // NestJS renvoie automatiquement 201 Created pour un POST
   }
 
   @Patch(':id')
-  @ApiBearerAuth() // Indique que cette route nécessite une authentification par token
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Mettre à jour un film' })
   @ApiOkResponse({ type: Movie, description: 'Movie updated successfully.' })
   async updateMovie(
     @Param('id') id: string,
     @Body() updateMovieDto: UpdateMovieDto,
-    @Res() res: Response,
   ) {
     const result = await this.updateMovieUseCase.execute(id, updateMovieDto);
+
     if (result.isFailure) {
-      return res.status(400).json({ message: result.error });
+      // Si le film n'existe pas pour être mis à jour, 404, sinon 400
+      if (result.error === 'Film non trouvé')
+        throw new NotFoundException(result.error);
+      throw new BadRequestException(result.error);
     }
 
-    const movie = result.getValue();
-    return res.status(200).json(movie);
+    return result.getValue();
   }
 
   @Delete(':id')
-  @ApiBearerAuth() // Indique que cette route nécessite une authentification par token
+  @HttpCode(HttpStatus.NO_CONTENT) // Force le code 204
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Supprimer un film' })
   @ApiNoContentResponse({ description: 'Movie deleted successfully.' })
-  async deleteMovie(@Param('id') id: string, @Res() res: Response) {
+  async deleteMovie(@Param('id') id: string) {
     const result = await this.deleteMovieUseCase.execute(id);
 
     if (result.isFailure) {
-      if (result.error === 'Movie not found') {
-        return res.status(404).json({ message: result.error });
+      if (
+        result.error === 'Movie not found' ||
+        result.error === 'Film non trouvé'
+      ) {
+        throw new NotFoundException(result.error);
       }
-      return res.status(400).json({ message: result.error });
+      throw new BadRequestException(result.error);
     }
-    return res.status(204).send(); // No Content
+    // Pas besoin de return, NestJS enverra 204 grâce au @HttpCode
   }
 
   // @Get()
