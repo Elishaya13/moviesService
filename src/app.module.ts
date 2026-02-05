@@ -4,12 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { ApplicationModule } from './application/application.module';
-import { MovieController } from './presentation/controllers/MovieController';
-// import { GetAllMoviesUseCase } from './application/use-cases/GetAllMovies/GetAllMoviesUseCase';
-// import { GetMovieByIdUseCase } from './application/use-cases/GetMovieById/GetMovieByIdUseCase';
-// import { CreateMovieUseCase } from './application/use-cases/CreateMovie/CreateMovieUseCase';
-// import { DeleteMovieUseCase } from './application/use-cases/DeleteMovie/DeleteMovieUseCase';
-// import { UpdateMovieUseCase } from './application/use-cases/UpdateMovie/UpdateMovieUseCase';
+import { PresentationModule } from './presentation/presentation.module';
 
 @Module({
   imports: [
@@ -18,15 +13,9 @@ import { MovieController } from './presentation/controllers/MovieController';
     }),
     DatabaseModule,
     ApplicationModule,
+    PresentationModule,
   ],
-  controllers: [AppController, MovieController],
-  providers: [
-    AppService,
-    // GetAllMoviesUseCase,
-    // GetMovieByIdUseCase,
-    // CreateMovieUseCase,
-    // DeleteMovieUseCase,
-    // UpdateMovieUseCase,
-  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

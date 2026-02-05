@@ -1,46 +1,62 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Result } from '../../shared/result';
+
+export interface MovieProps {
+  id?: string;
+  title: string;
+  description: string;
+  duration: number;
+  coverImage: string;
+  category: string;
+  releaseDate: Date;
+  rating: number;
+}
 
 export class Movie {
-  @ApiProperty()
-  id: string;
+  @ApiProperty() public readonly id: string;
 
-  @ApiProperty()
-  title: string;
+  @ApiProperty() public readonly title: string;
 
-  @ApiProperty()
-  description: string;
+  @ApiProperty() public readonly description: string;
 
-  @ApiProperty()
-  duration: number;
+  @ApiProperty() public readonly duration: number;
 
-  @ApiProperty()
-  coverImage: string;
+  @ApiProperty() public readonly coverImage: string;
+  @ApiProperty() public readonly category: string;
 
-  @ApiProperty()
-  category: string;
+  @ApiProperty() public readonly releaseDate: Date;
 
-  @ApiProperty()
-  releaseDate: Date;
+  @ApiProperty() public readonly rating: number;
 
-  @ApiProperty()
-  rating: number;
-  constructor(
-    id: string,
-    title: string,
-    description: string,
-    duration: number,
-    coverImage: string,
-    category: string,
-    releaseDate: Date,
-    rating: number,
-  ) {
-    this.id = id;
-    this.title = title;
-    this.description = description;
-    this.duration = duration;
-    this.coverImage = coverImage;
-    this.category = category;
-    this.releaseDate = releaseDate;
-    this.rating = rating;
+  private constructor(props: MovieProps) {
+    this.id = props.id ?? crypto.randomUUID();
+    this.title = props.title;
+    this.description = props.description;
+    this.duration = props.duration;
+    this.coverImage = props.coverImage;
+    this.category = props.category;
+    this.releaseDate = props.releaseDate;
+    this.rating = props.rating;
+  }
+
+  public static create(props: MovieProps): Result<Movie> {
+    // Validation métier
+    if (!props.title || props.title.trim() === '') {
+      return Result.fail<Movie>('Title is required');
+    }
+    if (props.duration <= 0) {
+      return Result.fail<Movie>('Duration must be greater than 0');
+    }
+    if (props.rating < 0 || props.rating > 10) {
+      return Result.fail<Movie>('Rating must be between 0 and 10');
+    }
+
+    // Si tout est valide, on crée l'instance de Movie
+    const movie = new Movie(props);
+    return Result.ok<Movie>(movie);
+  }
+
+  public static toDomain(props: MovieProps): Movie {
+    return new Movie(props);
   }
 }

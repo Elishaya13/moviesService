@@ -24,17 +24,16 @@ export class PrismaMovieRepository implements MovieRepository {
         rating: movieData.rating,
       },
     });
-    // Return a new Movie entity
-    return new Movie(
-      created.id,
-      created.title,
-      created.description,
-      created.duration,
-      created.coverImage,
-      created.category,
-      created.releaseDate,
-      created.rating,
-    );
+    return Movie.toDomain({
+      id: created.id,
+      title: created.title,
+      description: created.description,
+      duration: created.duration,
+      coverImage: created.coverImage,
+      category: created.category,
+      releaseDate: created.releaseDate,
+      rating: created.rating,
+    });
   }
 
   async findAll(filters?: MovieFilters): Promise<Movie[]> {
@@ -45,35 +44,33 @@ export class PrismaMovieRepository implements MovieRepository {
     }
 
     const movies = await this.prisma.movie.findMany({ where });
-
-    return movies.map(
-      (m) =>
-        new Movie(
-          m.id,
-          m.title,
-          m.description,
-          m.duration,
-          m.coverImage,
-          m.category,
-          m.releaseDate,
-          m.rating,
-        ),
+    return movies.map((m) =>
+      Movie.toDomain({
+        id: m.id,
+        title: m.title,
+        description: m.description,
+        duration: m.duration,
+        coverImage: m.coverImage,
+        category: m.category,
+        releaseDate: m.releaseDate,
+        rating: m.rating,
+      }),
     );
   }
 
   async findById(id: string): Promise<Movie | null> {
     const movie = await this.prisma.movie.findUnique({ where: { id } });
     if (!movie) return null;
-    return new Movie(
-      movie.id,
-      movie.title,
-      movie.description,
-      movie.duration,
-      movie.coverImage,
-      movie.category,
-      movie.releaseDate,
-      movie.rating,
-    );
+    return Movie.toDomain({
+      id: movie.id,
+      title: movie.title,
+      description: movie.description,
+      duration: movie.duration,
+      coverImage: movie.coverImage,
+      category: movie.category,
+      releaseDate: movie.releaseDate,
+      rating: movie.rating,
+    });
   }
 
   async update(id: string, movieData: Partial<Movie>): Promise<Movie> {
@@ -81,16 +78,16 @@ export class PrismaMovieRepository implements MovieRepository {
       where: { id },
       data: movieData,
     });
-    return new Movie(
-      updated.id,
-      updated.title,
-      updated.description,
-      updated.duration,
-      updated.coverImage,
-      updated.category,
-      updated.releaseDate,
-      updated.rating,
-    );
+    return Movie.toDomain({
+      id: updated.id,
+      title: updated.title,
+      description: updated.description,
+      duration: updated.duration,
+      coverImage: updated.coverImage,
+      category: updated.category,
+      releaseDate: updated.releaseDate,
+      rating: updated.rating,
+    });
   }
 
   async delete(id: string): Promise<void> {
