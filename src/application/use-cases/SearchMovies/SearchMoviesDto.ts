@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import { IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { MovieCategory } from 'src/domain/entities/movie-category.enum';
 
 export class SearchMoviesDto {
   @ApiPropertyOptional({ description: 'Filtrer par titre' })
@@ -9,10 +10,13 @@ export class SearchMoviesDto {
   @IsString()
   title?: string;
 
-  @ApiPropertyOptional({ description: 'Filtrer par catégorie' })
+  @ApiPropertyOptional({
+    enum: MovieCategory,
+    description: 'Filtrer par catégorie',
+  })
   @IsOptional()
-  @IsString()
-  category?: string;
+  @IsEnum(MovieCategory)
+  category?: MovieCategory;
 
   @ApiPropertyOptional({ description: 'Note minimale', example: 7 })
   @IsOptional()

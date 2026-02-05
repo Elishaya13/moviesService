@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       // On extrait le token du header 'Authorization: Bearer <token>'
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      // Le secret doit être identique à celui du microservice Auth de ton collègue
+      // Le secret doit être identique à celui du microservice Auth de l'AuthService
       secretOrKey: configService.get<string>('JWT_SECRET')!,
     });
   }

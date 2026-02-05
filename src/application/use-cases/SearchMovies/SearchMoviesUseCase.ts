@@ -12,7 +12,7 @@ export class SearchMoviesUseCase {
     try {
       const movies = await this.movieRepository.search(dto);
 
-      // Même si la liste est vide, c'est un succès (on renvoie [] )
+      // Même si la liste est vide (on renvoie [] )
       return Result.ok<Movie[]>(movies);
     } catch (error) {
       console.error('Error searching movies:', error);

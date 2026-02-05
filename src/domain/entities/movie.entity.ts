@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Result } from '../../shared/result';
 import { MovieCategory } from './movie-category.enum';
 
@@ -14,20 +13,20 @@ export interface MovieProps {
 }
 
 export class Movie {
-  @ApiProperty() public readonly id: string;
+  public readonly id: string;
 
-  @ApiProperty() public readonly title: string;
+  public readonly title: string;
 
-  @ApiProperty() public readonly description: string;
+  public readonly description: string;
+  public readonly duration: number;
 
-  @ApiProperty() public readonly duration: number;
+  public readonly coverImage: string;
 
-  @ApiProperty() public readonly coverImage: string;
-  @ApiProperty({ enum: MovieCategory }) public readonly category: MovieCategory;
+  public readonly category: MovieCategory;
 
-  @ApiProperty() public readonly releaseDate: Date;
+  public readonly releaseDate: Date;
 
-  @ApiProperty() public readonly rating: number;
+  public readonly rating: number;
 
   private constructor(props: MovieProps) {
     this.id = props.id ?? crypto.randomUUID();

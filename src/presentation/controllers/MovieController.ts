@@ -28,10 +28,10 @@ import { CreateMovieUseCase } from 'src/application/use-cases/CreateMovie/Create
 import { DeleteMovieUseCase } from 'src/application/use-cases/DeleteMovie/DeleteMovieUseCase';
 import { UpdateMovieUseCase } from 'src/application/use-cases/UpdateMovie/UpdateMovieUseCase';
 import { UpdateMovieDto } from 'src/application/use-cases/UpdateMovie/UpdateMovieDto';
-import { Movie } from 'src/domain/entities/movie.entity';
 import { JwtAuthGuard } from '../guards/auth.guard';
 import { SearchMoviesDto } from 'src/application/use-cases/SearchMovies/SearchMoviesDto';
 import { SearchMoviesUseCase } from 'src/application/use-cases/SearchMovies/SearchMoviesUseCase';
+import { MovieResponseDto } from '../dto/movie-response.dto';
 
 @ApiTags('Movies')
 @Controller('movies')
@@ -48,7 +48,7 @@ export class MovieController {
   @Get()
   @ApiOperation({ summary: 'Récupérer tous les films' })
   @ApiOkResponse({
-    type: Movie,
+    type: MovieResponseDto,
     isArray: true,
     description: 'List of movies retrieved successfully.',
   })
@@ -63,9 +63,8 @@ export class MovieController {
   @Get('search')
   @ApiOperation({ summary: 'Rechercher des films' })
   @ApiOkResponse({
-    type: Movie,
-    isArray: true,
-    description: 'Movies retrieved successfully based on search criteria.',
+    type: [MovieResponseDto],
+    description: 'Liste des films correspondant aux filtres.',
   })
   async search(@Query() query: SearchMoviesDto) {
     const result = await this.searchMoviesUseCase.execute(query);
@@ -79,7 +78,10 @@ export class MovieController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Récupérer un film par son ID' })
-  @ApiOkResponse({ type: Movie, description: 'Movie retrieved successfully.' })
+  @ApiOkResponse({
+    type: MovieResponseDto,
+    description: 'Movie retrieved successfully.',
+  })
   async getMovieById(@Param('id') id: string) {
     const result = await this.getMovieByIdUseCase.execute(id);
 
@@ -96,8 +98,12 @@ export class MovieController {
   @ApiOperation({ summary: 'Créer un nouveau film' })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  // @ApiCreatedResponse({
+  //   type: Movie,
+  //   description: 'The movie has been successfully created.',
+  // })
   @ApiCreatedResponse({
-    type: Movie,
+    type: MovieResponseDto,
     description: 'The movie has been successfully created.',
   })
   async createMovie(@Body() createMovieDto: CreateMovieDto) {
@@ -114,7 +120,10 @@ export class MovieController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Mettre à jour un film' })
-  @ApiOkResponse({ type: Movie, description: 'Movie updated successfully.' })
+  @ApiOkResponse({
+    type: MovieResponseDto,
+    description: 'Movie updated successfully.',
+  })
   async updateMovie(
     @Param('id') id: string,
     @Body() updateMovieDto: UpdateMovieDto,
