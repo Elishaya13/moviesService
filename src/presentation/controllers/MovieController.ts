@@ -28,10 +28,11 @@ import { CreateMovieUseCase } from 'src/application/use-cases/CreateMovie/Create
 import { DeleteMovieUseCase } from 'src/application/use-cases/DeleteMovie/DeleteMovieUseCase';
 import { UpdateMovieUseCase } from 'src/application/use-cases/UpdateMovie/UpdateMovieUseCase';
 import { UpdateMovieDto } from 'src/application/use-cases/UpdateMovie/UpdateMovieDto';
-import { JwtAuthGuard } from '../guards/auth.guard';
 import { SearchMoviesDto } from 'src/application/use-cases/SearchMovies/SearchMoviesDto';
 import { SearchMoviesUseCase } from 'src/application/use-cases/SearchMovies/SearchMoviesUseCase';
 import { MovieResponseDto } from '../dto/movie-response.dto';
+import { GetMovieByIdDto } from 'src/application/use-cases/GetMovieById/GetMovieByIdDto';
+import { RemoteAuthGuard } from '../guards/remote-auth.guard';
 
 @ApiTags('Movies')
 @Controller('movies')
@@ -82,8 +83,8 @@ export class MovieController {
     type: MovieResponseDto,
     description: 'Movie retrieved successfully.',
   })
-  async getMovieById(@Param('id') id: string) {
-    const result = await this.getMovieByIdUseCase.execute(id);
+  async getMovieById(@Param() params: GetMovieByIdDto) {
+    const result = await this.getMovieByIdUseCase.execute(params.id);
 
     if (result.isFailure) {
       // Si le film n'existe pas, on renvoie une 404 (Not Found)
@@ -97,11 +98,7 @@ export class MovieController {
   @Post()
   @ApiOperation({ summary: 'Créer un nouveau film' })
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  // @ApiCreatedResponse({
-  //   type: Movie,
-  //   description: 'The movie has been successfully created.',
-  // })
+  @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
   @ApiCreatedResponse({
     type: MovieResponseDto,
     description: 'The movie has been successfully created.',
@@ -118,7 +115,7 @@ export class MovieController {
 
   @Patch(':id')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
   @ApiOperation({ summary: 'Mettre à jour un film' })
   @ApiOkResponse({
     type: MovieResponseDto,
@@ -143,7 +140,7 @@ export class MovieController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT) // Force le code 204
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
   @ApiOperation({ summary: 'Supprimer un film' })
   @ApiNoContentResponse({ description: 'Movie deleted successfully.' })
   async deleteMovie(@Param('id') id: string) {
@@ -160,43 +157,4 @@ export class MovieController {
     }
     // Pas besoin de return, NestJS enverra 204 grâce au @HttpCode
   }
-
-  // @Get()
-  // @ApiOkResponse({
-  //   type: Movie,
-  //   isArray: true,
-  //   description: 'List of movies retrieved successfully.',
-  // })
-  // async getMovies(@Query() queryParams: GetAllMoviesDto) {
-  //   return this.getAllMoviesUseCase.execute(queryParams);
-  // }
-  // @Get(':id')
-  // @ApiOkResponse({ type: Movie, description: 'Movie retrieved successfully.' })
-  // async getMovieById(@Param('id') id: string) {
-  //   return this.getMovieByIdUseCase.execute(id);
-  // }
-  // @Post()
-  // @ApiCreatedResponse({
-  //   type: Movie,
-  //   description: 'The movie has been successfully created.',
-  // })
-  // async createMovie(@Body() createMovieDto: CreateMovieDto) {
-  //   return this.createMovieUseCase.execute(createMovieDto);
-  // }
-  // }
-
-  // @Patch(':id')
-  // @ApiOkResponse({ type: Movie, description: 'Movie updated successfully.' })
-  // async updateMovie(
-  //   @Param('id') id: string,
-  //   @Body() updateMovieDto: UpdateMovieDto,
-  // ) {
-  //   return this.updateMovieUseCase.execute(id, updateMovieDto);
-  // }
-
-  // @Delete(':id')
-  // @ApiNoContentResponse({ description: 'Movie deleted successfully.' })
-  // async deleteMovie(@Param('id') id: string) {
-  //   return this.deleteMovieUseCase.execute(id);
-  // }
 }

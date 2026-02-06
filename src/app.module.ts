@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import { ApplicationModule } from './application/application.module';
 import { PresentationModule } from './presentation/presentation.module';
-import { JwtStrategy } from './infrastructure/auth/jwt.strategy';
+import { RemoteAuthGuard } from './presentation/guards/remote-auth.guard';
 
 @Module({
   imports: [
@@ -15,6 +15,6 @@ import { JwtStrategy } from './infrastructure/auth/jwt.strategy';
     PresentationModule,
   ],
   controllers: [],
-  providers: [JwtStrategy],
+  providers: [RemoteAuthGuard], // Ajoutez le RemoteAuthGuard ici pour qu'il soit disponible dans toute l'application
 })
 export class AppModule {}

@@ -12,7 +12,11 @@ async function bootstrap() {
       transform: true, // Transforme les payloads en instances de classes DTO
     }),
   ); // Active la validation globale des DTOs
-  app.enableCors(); // Permet les requêtes cross-origin, nécessaire pour le frontend
+
+  app.enableCors({
+    origin: ['http://localhost:4000'], // Remplacez par l'URL de votre service backend cinema-service
+    methods: 'GET', // Autorise uniquement les requêtes GET
+  });
 
   // --- Configuration Swagger ---
   const config = new DocumentBuilder()
