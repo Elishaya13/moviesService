@@ -10,7 +10,7 @@ services:
     volumes:
       - postgres_data_service2:/var/lib/postgresql/data
     ports:
-      - '5433:5432'
+      - '5432:5432'
   api:
     build: .
     container_name: movies_api
