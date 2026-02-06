@@ -13,7 +13,6 @@ import { Request } from 'express';
 
 interface AuthResponse {
   id: string;
-  username: string;
   role: string;
 }
 
@@ -50,7 +49,7 @@ export class RemoteAuthGuard implements CanActivate {
       if (data.role !== 'admin')
         throw new ForbiddenException('Admin role required');
 
-      request.user = data;
+      request['user'] = data;
       return true;
     } catch (error) {
       // On renvoie une 401 si le token est invalide ou une 403 si pas admin
