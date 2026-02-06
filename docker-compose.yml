@@ -1,6 +1,5 @@
 version: '3.8'
 services:
-
   postgres:
     image: postgres:13.5
     restart: always
@@ -12,7 +11,24 @@ services:
       - postgres_data_service2:/var/lib/postgresql/data
     ports:
       - '5433:5432'
-
+api:
+  build: .
+  container_name: movies_api
+  # On laisse le Dockerfile gérer la commande de démarrage (migrations + start)
+  restart: always
+  environment:
+    DATABASE_URL: postgresql://movies:movies@postgres:5432/moviesService?schema=public
+  ports:
+    - '3001:3001'
+  depends_on:
+    - postgres
+  networks:
+    - private-net
+    - reseau-web
+networks:
+  private-net:
+    driver: bridge
+  reseau-web:
+    external: true
 volumes:
   postgres_data_service2:
-
