@@ -23,7 +23,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - private-net
+      - private-net-movie
       - reseau-web
 networks:
   private-net-movie:
