@@ -9,8 +9,8 @@ services:
       - POSTGRES_DB=moviesService
     volumes:
       - postgres_data_service2:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
+    networks:
+      - private-net-movie
   api:
     build: .
     container_name: movies_api
@@ -26,7 +26,7 @@ services:
       - private-net
       - reseau-web
 networks:
-  private-net:
+  private-net-movie:
     driver: bridge
   reseau-web:
     external: true
