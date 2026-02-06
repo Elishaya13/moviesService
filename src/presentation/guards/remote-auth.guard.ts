@@ -46,8 +46,9 @@ export class RemoteAuthGuard implements CanActivate {
 
       // --- LA VÉRIFICATION ADMIN ---
       // On vérifie que le service auth confirme le rôle 'admin'
-      if (data.role !== 'admin')
+      if (data.role !== 'ROLE_ADMIN') {
         throw new ForbiddenException('Admin role required');
+      }
 
       request['user'] = data;
       return true;

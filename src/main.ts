@@ -27,7 +27,27 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      // On garde tagsSorter en 'alpha' pour que "1. Public" reste avant "2. Admin"
+      tagsSorter: 'alpha',
+
+      // On définit l'ordre des verbes manuellement
+      operationsSorter: (a: any, b: any) => {
+        const methodsOrder = ['get', 'post', 'patch', 'put', 'delete'];
+        let result =
+          methodsOrder.indexOf(a.get('method')) -
+          methodsOrder.indexOf(b.get('method'));
+
+        // Si les méthodes sont identiques, on trie par l'URL (path)
+        if (result === 0) {
+          result = a.get('path').localeCompare(b.get('path'));
+        }
+        return result;
+      },
+    },
+  });
 
   await app.listen(3000);
 }

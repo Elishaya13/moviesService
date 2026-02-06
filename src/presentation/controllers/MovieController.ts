@@ -19,8 +19,11 @@ import {
   ApiNoContentResponse,
   ApiOkResponse,
   ApiBearerAuth,
-  ApiTags,
   ApiOperation,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { GetMovieByIdUseCase } from 'src/application/use-cases/GetMovieById/GetMovieByIdUseCase';
 import { CreateMovieDto } from 'src/application/use-cases/CreateMovie/CreateMovieDto';
@@ -34,7 +37,6 @@ import { MovieResponseDto } from '../dto/movie-response.dto';
 import { GetMovieByIdDto } from 'src/application/use-cases/GetMovieById/GetMovieByIdDto';
 import { RemoteAuthGuard } from '../guards/remote-auth.guard';
 
-@ApiTags('Movies')
 @Controller('movies')
 export class MovieController {
   constructor(
@@ -47,12 +49,17 @@ export class MovieController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Récupérer tous les films' })
+  @ApiOperation({
+    summary: 'Get all movies',
+    description:
+      'Retrieves the complete list of movies available in the catalog.',
+  })
   @ApiOkResponse({
     type: MovieResponseDto,
     isArray: true,
     description: 'List of movies retrieved successfully.',
   })
+  @ApiBadRequestResponse({ description: 'Invalid request parameters.' })
   async getMovies() {
     const result = await this.getAllMoviesUseCase.execute();
     if (result.isFailure) {
@@ -62,11 +69,16 @@ export class MovieController {
   }
 
   @Get('search')
-  @ApiOperation({ summary: 'Rechercher des films' })
+  @ApiOperation({
+    summary: 'Search movies',
+    description:
+      'Filters movies by title, category, or rating using query parameters.',
+  })
   @ApiOkResponse({
     type: [MovieResponseDto],
-    description: 'Liste des films correspondant aux filtres.',
+    description: 'Filtered list of movies.',
   })
+  @ApiBadRequestResponse({ description: 'Invalid search criteria provided.' })
   async search(@Query() query: SearchMoviesDto) {
     const result = await this.searchMoviesUseCase.execute(query);
 
@@ -78,11 +90,17 @@ export class MovieController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Récupérer un film par son ID' })
+  @ApiOperation({
+    summary: 'Get movie by ID',
+    description:
+      'Retrieves detailed information about a specific movie using its unique UUID.',
+  })
   @ApiOkResponse({
     type: MovieResponseDto,
-    description: 'Movie retrieved successfully.',
+    description: 'Movie found and returned.',
   })
+  @ApiNotFoundResponse({ description: 'Movie not found.' })
+  @ApiBadRequestResponse({ description: 'Invalid UUID format.' })
   async getMovieById(@Param() params: GetMovieByIdDto) {
     const result = await this.getMovieByIdUseCase.execute(params.id);
 
@@ -96,13 +114,23 @@ export class MovieController {
 
   // Routes protegées par JWT
   @Post()
-  @ApiOperation({ summary: 'Créer un nouveau film' })
-  @ApiBearerAuth()
   @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Create a new movie',
+    description: 'Adds a new movie to the catalog. Requires Admin privileges.',
+  })
   @ApiCreatedResponse({
     type: MovieResponseDto,
-    description: 'The movie has been successfully created.',
+    description: 'Movie created successfully.',
   })
+  @ApiBadRequestResponse({
+    description: 'Validation failed for the provided data.',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Missing or invalid authentication token.',
+  })
+  @ApiForbiddenResponse({ description: 'Access denied. Admin role required.' })
   async createMovie(@Body() createMovieDto: CreateMovieDto) {
     const result = await this.createMovieUseCase.execute(createMovieDto);
 
@@ -114,13 +142,21 @@ export class MovieController {
   }
 
   @Patch(':id')
-  @ApiBearerAuth()
   @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
-  @ApiOperation({ summary: 'Mettre à jour un film' })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Update a movie',
+    description:
+      'Updates specific fields of an existing movie. Requires Admin privileges.',
+  })
   @ApiOkResponse({
     type: MovieResponseDto,
     description: 'Movie updated successfully.',
   })
+  @ApiNotFoundResponse({ description: 'No movie found with the provided ID.' })
+  @ApiBadRequestResponse({ description: 'Invalid data or UUID format.' })
+  @ApiUnauthorizedResponse({ description: 'Authentication required.' })
+  @ApiForbiddenResponse({ description: 'Admin role required.' })
   async updateMovie(
     @Param('id') id: string,
     @Body() updateMovieDto: UpdateMovieDto,
@@ -138,14 +174,20 @@ export class MovieController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT) // Force le code 204
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(RemoteAuthGuard)
   @ApiBearerAuth()
-  @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
-  @ApiOperation({ summary: 'Supprimer un film' })
+  @ApiOperation({
+    summary: 'Delete a movie',
+    description:
+      'Removes a movie permanently from the database. Requires Admin privileges.',
+  })
   @ApiNoContentResponse({ description: 'Movie deleted successfully.' })
+  @ApiNotFoundResponse({ description: 'Movie not found.' })
+  @ApiUnauthorizedResponse({ description: 'Authentication required.' })
+  @ApiForbiddenResponse({ description: 'Admin role required.' })
   async deleteMovie(@Param('id') id: string) {
     const result = await this.deleteMovieUseCase.execute(id);
-
     if (result.isFailure) {
       if (
         result.error === 'Movie not found' ||
@@ -155,6 +197,5 @@ export class MovieController {
       }
       throw new BadRequestException(result.error);
     }
-    // Pas besoin de return, NestJS enverra 204 grâce au @HttpCode
   }
 }
