@@ -17,7 +17,7 @@ services:
     # On laisse le Dockerfile gérer la commande de démarrage (migrations + start)
     restart: always
     environment:
-      DATABASE_URL: postgresql://movies:movies@postgres:5432/moviesService?schema=public
+      MOVIES_DATABASE_URL: postgresql://admin:admin@postgres:5432/moviesService?schema=public
     ports:
       - '3001:3001'
     depends_on:
