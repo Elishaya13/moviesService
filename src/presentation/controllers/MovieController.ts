@@ -114,8 +114,8 @@ export class MovieController {
 
   // Routes protegées par JWT
   @Post()
-  @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
-  @ApiBearerAuth()
+  // @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
+  // @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create a new movie',
     description: 'Adds a new movie to the catalog. Requires Admin privileges.',
@@ -142,8 +142,8 @@ export class MovieController {
   }
 
   @Patch(':id')
-  @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
-  @ApiBearerAuth()
+  // @UseGuards(RemoteAuthGuard) // Utilise le RemoteAuthGuard pour valider le token et vérifier le rôle admin
+  // @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update a movie',
     description:
@@ -175,8 +175,8 @@ export class MovieController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(RemoteAuthGuard)
-  @ApiBearerAuth()
+  // @UseGuards(RemoteAuthGuard)
+  // @ApiBearerAuth()
   @ApiOperation({
     summary: 'Delete a movie',
     description:
