@@ -26,11 +26,10 @@ COPY --from=builder /app/src/infrastructure/database/prisma ./src/infrastructure
 # Copie du fichier de configuration Prisma pour la prod
 COPY --from=builder /app/prisma.config.ts ./
 
-# Installation de Prisma en global pour pouvoir lancer les migrations en prod 
-# (car prisma est dans devDependencies et a été supprimé par npm prune)
+# Installation de Prisma en global pour pouvoir lancer les migrations et seeds en prod 
 RUN npm install -g prisma
 
 EXPOSE 3001
 
-# Lancement des migrations, des seeds et de l'app via config
+# Lancement des migrations, des seeds et de l'app
 CMD prisma migrate deploy && prisma db seed && node dist/src/main
