@@ -46,6 +46,7 @@ const moviesData = [
 ];
 
 export async function main() {
+  console.log('--- EXECUTING SEEDS ---');
   for (const movie of moviesData) {
     await prisma.movie.upsert({
       where: {

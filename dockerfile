@@ -32,4 +32,4 @@ RUN npm install -g prisma
 EXPOSE 3001
 
 # Lancement des migrations, des seeds et de l'app
-CMD npx prisma migrate deploy && npx prisma db seed && node dist/src/main
+CMD prisma migrate deploy && npx tsx src/infrastructure/database/prisma/seed.ts && node dist/src/main
