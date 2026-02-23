@@ -31,5 +31,5 @@ RUN npm install -g prisma
 
 EXPOSE 3001
 
-# Génération du client, migrations, seeds et lancement de l'app
-CMD npx prisma generate && npx prisma migrate deploy && npx prisma db seed && node dist/src/main
+# Lancement des migrations, des seeds et de l'app
+CMD npx prisma migrate deploy && npx prisma db seed && node dist/src/main

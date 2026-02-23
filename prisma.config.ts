@@ -9,6 +9,7 @@ export default defineConfig({
     path: 'src/infrastructure/database/prisma/migrations',
     seed: 'npx tsx src/infrastructure/database/prisma/seed.ts',
   },
+  seed: 'npx tsx src/infrastructure/database/prisma/seed.ts', // Placé ici à la racine
   datasource: {
     url: process.env['MOVIES_DATABASE_URL'],
   },
