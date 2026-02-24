@@ -13,9 +13,16 @@ async function bootstrap() {
     }),
   ); // Active la validation globale des DTOs
 
+  // app.enableCors({
+  //   origin: ['http://localhost:4200'], // Remplacez par l'URL de votre service backend cinema-service
+  //   methods: 'GET', // Autorise uniquement les requêtes GET
+  // });
+  // CORS ouvert à tout le monde (TEMPORAIRE)
   app.enableCors({
-    origin: ['http://localhost:4000'], // Remplacez par l'URL de votre service backend cinema-service
-    methods: 'GET', // Autorise uniquement les requêtes GET
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   });
 
   // --- Configuration Swagger ---
