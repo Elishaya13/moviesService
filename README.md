@@ -29,9 +29,28 @@ Le service suit une **Clean Architecture** : les dépendances vont vers le centr
 ### Flux
 
 ```
-Client HTTP  →  MovieController  →  Use cases  →  MovieRepository (interface)
-                                                      ↑
-                                              PrismaMovieRepository  →  PrismaService  →  PostgreSQL
+                         Client HTTP
+                              |
+                              v
++--------------------------------------------------------------+
+|  Presentation    MovieController, RemoteAuthGuard, DTOs       |
++--------------------------------------------------------------+
+                              |
+                              v
++--------------------------------------------------------------+
+|  Application     Use cases (GetAll, GetById, Create, etc.)    |
++--------------------------------------------------------------+
+                              |
+                              v
++--------------------------------------------------------------+
+|  Domain          Movie, MovieCategory, Repo (interface)        |
++--------------------------------------------------------------+
+                              ^
+                              | implémente
+                              |
++--------------------------------------------------------------+
+|  Infrastructure  PrismaRepo -> PrismaService -> PostgreSQL    |
++--------------------------------------------------------------+
 ```
 
 ### Couches
